@@ -1,0 +1,32 @@
+#include "Version.h"
+
+namespace ${CPP_NAMESPACE}
+{
+    namespace Version
+    {
+        uint32_t major()
+        {
+            return ${MAJOR} + 0;
+        }
+
+        uint32_t minor()
+        {
+            return ${MINOR} + 0;
+        }
+
+        uint32_t patch()
+        {
+            return ${PATCH} + 0;
+        }
+
+        uint32_t tweak()
+        {
+            return ${TWEAK} + 0;
+        }
+
+        std::string str()
+        {
+            return std::string("${FULL_VERSION}");
+        }
+    }
+}

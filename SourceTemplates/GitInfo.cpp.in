@@ -1,0 +1,22 @@
+#include "GitInfo.h"
+
+namespace ${CPP_NAMESPACE}
+{
+    namespace GitInfo
+    {
+        bool isDirty()
+        {
+            return ${IS_DIRTY};
+        }
+
+        std::string SHA1()
+        {
+            return std::string("${GIT_SHA1}");
+        }
+
+        std::string branch()
+        {
+            return std::string("${CURRENT_BRANCH_NAME}");
+        }
+    }
+}

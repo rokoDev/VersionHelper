@@ -1,0 +1,16 @@
+#ifndef GitInfo_h
+#define GitInfo_h
+
+#include <string>
+
+namespace ${CPP_NAMESPACE}
+{
+    namespace GitInfo
+    {
+        bool isDirty();
+        std::string SHA1();
+        std::string branch();
+    }  // namespace GitInfo
+}  // namespace ${CPP_NAMESPACE}
+
+#endif /* GitInfo_h */
