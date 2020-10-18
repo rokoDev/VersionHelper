@@ -110,8 +110,6 @@ macro(m_generate_version_info_sources)
          set(${arg} ${${prefix}_${arg}})
     endforeach()
 
-    message(STATUS "Bla bla bla")
-
     f_generate_version_h(
         CPP_NAMESPACE ${CPP_NAMESPACE}
         OUT_H_DIR ${OUT_H_DIR})
@@ -144,4 +142,30 @@ macro(m_generate_version_info_sources)
     add_library("versionInfo" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
     add_dependencies("versionInfo" updateVersionInfo updateGitInfo)
     target_include_directories("versionInfo" PUBLIC "${OUT_H_DIR}")
+endmacro()
+
+macro(m_generate_version_info_sources_by_project_name)
+    set(prefix ARG)
+    set(noValues "")
+    set(singleValues MY_PROJECT_NAME)
+    set(multiValues "")
+    
+    cmake_parse_arguments(${prefix}
+                          "${noValues}"
+                          "${singleValues}"
+                          "${multiValues}"
+                          ${ARGN})
+
+    foreach(arg IN LISTS singleValues)
+         set(${arg} ${${prefix}_${arg}})
+    endforeach()
+    m_generate_version_info_sources(
+        CPP_NAMESPACE ${MY_PROJECT_NAME}
+        OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/include/VersionInfo
+        OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/VersionInfo
+        MAJOR ${${MY_PROJECT_NAME}_VERSION_MAJOR}
+        MINOR ${${MY_PROJECT_NAME}_VERSION_MINOR}
+        PATCH ${${MY_PROJECT_NAME}_VERSION_PATCH}
+        TWEAK ${${MY_PROJECT_NAME}_VERSION_TWEAK}
+        FULL_VERSION ${${MY_PROJECT_NAME}_VERSION})
 endmacro()
