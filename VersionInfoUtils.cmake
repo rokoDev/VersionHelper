@@ -140,6 +140,7 @@ macro(m_generate_version_info_sources)
         ${OUT_CPP_DIR}/GitInfo.cpp)
 
     add_library("versionInfo" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
+    set_target_properties("versionInfo" PROPERTIES POSITION_INDEPENDENT_CODE ON)
     add_dependencies("versionInfo" updateVersionInfo updateGitInfo)
     target_include_directories("versionInfo" PUBLIC "${OUT_H_DIR}")
 endmacro()
