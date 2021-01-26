@@ -29,7 +29,7 @@ endfunction()
 macro(m_generate_version_cpp)
     set(IN_CPP_PATH ${CUR_ACTIVE_DIR}/SourceTemplates/Version.cpp.in)
 
-    add_custom_target(updateVersionInfo
+    add_custom_target("${CPP_NAMESPACE}_updateVersionInfo"
         COMMAND ${CMAKE_COMMAND}
         -DCPP_NAMESPACE=${CPP_NAMESPACE}
         -DIN_CPP_PATH=${IN_CPP_PATH}
@@ -75,11 +75,12 @@ endfunction()
 macro(m_generate_git_info_cpp)
     set(IN_CPP_PATH ${CUR_ACTIVE_DIR}/SourceTemplates/GitInfo.cpp.in)
 
-    add_custom_target(updateGitInfo
+    add_custom_target("${CPP_NAMESPACE}_updateGitInfo"
         COMMAND ${CMAKE_COMMAND}
         -DCPP_NAMESPACE=${CPP_NAMESPACE}
         -DIN_CPP_PATH=${IN_CPP_PATH}
         -DOUT_CPP_PATH=${OUT_CPP_DIR}/GitInfo.cpp
+        -DCUR_DIR=${CMAKE_CURRENT_LIST_DIR}
         -P ${CUR_ACTIVE_DIR}/GenerateGitInfoCpp.cmake
         COMMENT "Updating GitInfo.cpp ..."
         BYPRODUCTS ${OUT_CPP_DIR}/GitInfo.cpp
@@ -139,10 +140,10 @@ macro(m_generate_version_info_sources)
         ${OUT_CPP_DIR}/Version.cpp
         ${OUT_CPP_DIR}/GitInfo.cpp)
 
-    add_library("versionInfo" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
-    set_target_properties("versionInfo" PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    add_dependencies("versionInfo" updateVersionInfo updateGitInfo)
-    target_include_directories("versionInfo" PUBLIC "${OUT_H_DIR}")
+    add_library("${CPP_NAMESPACE}_versionInfo" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
+    set_target_properties("${CPP_NAMESPACE}_versionInfo" PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    add_dependencies("${CPP_NAMESPACE}_versionInfo" "${CPP_NAMESPACE}_updateVersionInfo" "${CPP_NAMESPACE}_updateGitInfo")
+    target_include_directories("${CPP_NAMESPACE}_versionInfo" PUBLIC "${OUT_H_DIR}")
 endmacro()
 
 macro(m_generate_version_info_sources_by_project_name)
