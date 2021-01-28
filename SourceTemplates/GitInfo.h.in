@@ -1,5 +1,5 @@
-#ifndef GitInfo_h
-#define GitInfo_h
+#ifndef GitInfo_${CPP_NAMESPACE}_h
+#define GitInfo_${CPP_NAMESPACE}_h
 
 #include <string>
 

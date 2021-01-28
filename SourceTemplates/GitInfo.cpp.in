@@ -1,4 +1,4 @@
-#include "GitInfo.h"
+#include "${CPP_NAMESPACE}/GitInfo.h"
 
 namespace ${CPP_NAMESPACE}
 {

@@ -143,7 +143,9 @@ macro(m_generate_version_info_sources)
     add_library("${CPP_NAMESPACE}_versionInfo" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
     set_target_properties("${CPP_NAMESPACE}_versionInfo" PROPERTIES POSITION_INDEPENDENT_CODE ON)
     add_dependencies("${CPP_NAMESPACE}_versionInfo" "${CPP_NAMESPACE}_updateVersionInfo" "${CPP_NAMESPACE}_updateGitInfo")
-    target_include_directories("${CPP_NAMESPACE}_versionInfo" PUBLIC "${OUT_H_DIR}")
+    target_include_directories("${CPP_NAMESPACE}_versionInfo" PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
 endmacro()
 
 macro(m_generate_version_info_sources_by_project_name)
@@ -163,8 +165,8 @@ macro(m_generate_version_info_sources_by_project_name)
     endforeach()
     m_generate_version_info_sources(
         CPP_NAMESPACE ${MY_PROJECT_NAME}
-        OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/include/VersionInfo
-        OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/VersionInfo
+        OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/include/${MY_PROJECT_NAME}
+        OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/${MY_PROJECT_NAME}
         MAJOR ${${MY_PROJECT_NAME}_VERSION_MAJOR}
         MINOR ${${MY_PROJECT_NAME}_VERSION_MINOR}
         PATCH ${${MY_PROJECT_NAME}_VERSION_PATCH}

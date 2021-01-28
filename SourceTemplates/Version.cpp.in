@@ -1,4 +1,4 @@
-#include "Version.h"
+#include "${CPP_NAMESPACE}/Version.h"
 
 namespace ${CPP_NAMESPACE}
 {

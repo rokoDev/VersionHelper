@@ -1,5 +1,5 @@
-#ifndef Version_h
-#define Version_h
+#ifndef Version_${CPP_NAMESPACE}_h
+#define Version_${CPP_NAMESPACE}_h
 
 #include <string>
 
