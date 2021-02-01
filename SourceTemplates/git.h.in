@@ -1,0 +1,16 @@
+#ifndef ${CPP_NAMESPACE}_git_h
+#define ${CPP_NAMESPACE}_git_h
+
+#include <string>
+
+namespace ${CPP_NAMESPACE}
+{
+    namespace git
+    {
+        bool dirty();
+        std::string sha1();
+        std::string branch();
+    }  // namespace git
+}  // namespace ${CPP_NAMESPACE}
+
+#endif /* ${CPP_NAMESPACE}_git_h */

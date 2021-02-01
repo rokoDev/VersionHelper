@@ -1,8 +1,8 @@
-#include "${CPP_NAMESPACE}/Version.h"
+#include "${CPP_NAMESPACE}/version.h"
 
 namespace ${CPP_NAMESPACE}
 {
-    namespace Version
+    namespace version
     {
         uint32_t major()
         {

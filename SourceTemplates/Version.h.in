@@ -1,18 +1,18 @@
-#ifndef Version_${CPP_NAMESPACE}_h
-#define Version_${CPP_NAMESPACE}_h
+#ifndef ${CPP_NAMESPACE}_version_h
+#define ${CPP_NAMESPACE}_version_h
 
 #include <string>
 
 namespace ${CPP_NAMESPACE}
 {
-    namespace Version
+    namespace version
     {
         uint32_t major();
         uint32_t minor();
         uint32_t patch();
         uint32_t tweak();
         std::string str();
-    }  // namespace Version
+    }  // namespace version
 }  // namespace ${CPP_NAMESPACE}
 
-#endif /* Version_h */
+#endif /* ${CPP_NAMESPACE}_version_h */

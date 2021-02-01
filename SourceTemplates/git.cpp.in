@@ -1,15 +1,15 @@
-#include "${CPP_NAMESPACE}/GitInfo.h"
+#include "${CPP_NAMESPACE}/git.h"
 
 namespace ${CPP_NAMESPACE}
 {
-    namespace GitInfo
+    namespace git
     {
-        bool isDirty()
+        bool dirty()
         {
             return ${IS_DIRTY};
         }
 
-        std::string SHA1()
+        std::string sha1()
         {
             return std::string("${GIT_SHA1}");
         }

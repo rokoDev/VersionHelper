@@ -1,0 +1,17 @@
+#ifndef ${CPP_NAMESPACE}_build_type_h
+#define ${CPP_NAMESPACE}_build_type_h
+
+#include <string>
+#include <string_view>
+
+namespace ${CPP_NAMESPACE}
+{
+    enum class eBuildType : std::uint8_t
+    {
+        ${BUILD_TYPES_ENUM_LIST}
+    };
+
+${BUILD_TYPE_FUNC_SRC}
+}  // namespace ${CPP_NAMESPACE}
+
+#endif /* ${CPP_NAMESPACE}_build_type_h */
