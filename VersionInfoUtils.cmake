@@ -26,9 +26,6 @@ macro(m_generate_version_info_sources)
         set(${arg} ${${prefix}_${arg}})
     endforeach()
 
-    set(H_FILE_LIST "version.h" "version_info.h")
-    set(CPP_FILE_LIST "version_info.cpp")
-
     set(IN_PATH "${CUR_ACTIVE_DIR}/SourceTemplates")
     set(OUT_FILE_NAMES
         "build_type_defs.h"
@@ -38,6 +35,10 @@ macro(m_generate_version_info_sources)
         "version.h"
         "version_info.cpp"
         )
+    set(IN_PATH_LIST "")
+    set(OUT_PATH_LIST "")
+    set(VERSION_INFO_HEADERS "")
+    set(VERSION_INFO_SOURCES "")
     foreach(OUT_NAME IN LISTS OUT_FILE_NAMES)
         list(APPEND IN_PATH_LIST "${IN_PATH}/${OUT_NAME}.in")
         get_filename_component(F_EXT ${OUT_NAME} LAST_EXT)
@@ -86,7 +87,9 @@ endmacro()
 macro(m_generate_version_info)
     set(prefix ARG)
     set(noValues "")
-    set(singleValues CPP_NAMESPACE)
+    set(singleValues
+        PROJECT_NAME
+        CPP_NAMESPACE)
     set(multiValues BUILD_TYPES)
     
     cmake_parse_arguments(${prefix}
@@ -115,11 +118,11 @@ macro(m_generate_version_info)
         CPP_NAMESPACE ${CPP_NAMESPACE}
         OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/include/${CPP_NAMESPACE}
         OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/${CPP_NAMESPACE}
-        MAJOR ${${CPP_NAMESPACE}_VERSION_MAJOR}
-        MINOR ${${CPP_NAMESPACE}_VERSION_MINOR}
-        PATCH ${${CPP_NAMESPACE}_VERSION_PATCH}
-        TWEAK ${${CPP_NAMESPACE}_VERSION_TWEAK}
-        FULL_VERSION ${${CPP_NAMESPACE}_VERSION}
+        MAJOR ${${PROJECT_NAME}_VERSION_MAJOR}
+        MINOR ${${PROJECT_NAME}_VERSION_MINOR}
+        PATCH ${${PROJECT_NAME}_VERSION_PATCH}
+        TWEAK ${${PROJECT_NAME}_VERSION_TWEAK}
+        FULL_VERSION ${${PROJECT_NAME}_VERSION}
         CUR_DIR ${CMAKE_CURRENT_LIST_DIR}
         BUILD_TYPES ${BUILD_TYPES})
 endmacro()
