@@ -83,7 +83,7 @@ macro(m_generate_version_info_sources)
         $<INSTALL_INTERFACE:include>)
 endmacro()
 
-macro(m_generate_version_info_sources_by_project_name)
+macro(m_generate_version_info)
     set(prefix ARG)
     set(noValues "")
     set(singleValues MY_PROJECT_NAME)
