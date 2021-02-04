@@ -1,0 +1,13 @@
+#ifndef ${CPP_NAMESPACE}_build_type_defs_h
+#define ${CPP_NAMESPACE}_build_type_defs_h
+
+#include <string_view>
+
+#include "build_type.h"
+
+namespace ${CPP_NAMESPACE}
+{
+${BUILD_TYPE_FUNC_SRC}
+}  // namespace ${CPP_NAMESPACE}
+
+#endif /* ${CPP_NAMESPACE}_build_type_defs_h */

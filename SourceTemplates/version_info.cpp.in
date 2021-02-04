@@ -1,0 +1,79 @@
+#include "${CPP_NAMESPACE}/build_type.h"
+#include "${CPP_NAMESPACE}/build_type_defs.h"
+#include "${CPP_NAMESPACE}/git.h"
+#include "${CPP_NAMESPACE}/version.h"
+#include "${CPP_NAMESPACE}/version_info.h"
+
+inline constexpr std::string_view kVersionInfoStr = R"vi(
+${VERSION_INFO_STR}
+                           version: ${FULL_VERSION}
+                        build type: ${BUILD_TYPE}
+                            branch: ${CURRENT_BRANCH_NAME}
+                              sha1: ${GIT_SHA1}
+                             dirty: ${IS_DIRTY}
+********************************************************************************
+)vi";
+
+namespace ${CPP_NAMESPACE}
+{
+    eBuildType build_type() noexcept
+    {
+        return kBuildType;
+    }
+
+    std::string_view build_type_str() noexcept
+    {
+        return kBuildTypeStr;
+    }
+
+    namespace git
+    {
+        bool dirty() noexcept
+        {
+            return kIsDirty;
+        }
+
+        std::string_view sha1() noexcept
+        {
+            return kSHA1;
+        }
+
+        std::string_view branch() noexcept
+        {
+            return kBranchName;
+        }
+    }
+
+    namespace version
+    {
+        uint32_t major() noexcept
+        {
+            return kMajor;
+        }
+
+        uint32_t minor() noexcept
+        {
+            return kMinor;
+        }
+
+        uint32_t patch() noexcept
+        {
+            return kPatch;
+        }
+
+        uint32_t tweak() noexcept
+        {
+            return kTweak;
+        }
+
+        std::string_view str() noexcept
+        {
+            return kStr;
+        }
+    }
+
+    std::string_view version_info() noexcept
+    {
+        return kVersionInfoStr;
+    }
+}

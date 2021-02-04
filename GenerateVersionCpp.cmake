@@ -1,1 +1,0 @@
-configure_file(${IN_CPP_PATH} ${OUT_CPP_PATH})

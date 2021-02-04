@@ -44,5 +44,3 @@ set(IS_DIRTY true)
 if("${CURRENT_DIFF}" STREQUAL "")
 	set(IS_DIRTY false)
 endif()
-
-configure_file(${IN_CPP_PATH} ${OUT_CPP_PATH})
