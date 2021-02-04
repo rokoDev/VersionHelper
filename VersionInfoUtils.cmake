@@ -53,6 +53,7 @@ macro(m_generate_version_info_sources)
     endforeach()
     
     include(${CUR_ACTIVE_DIR}/GenerateByConfigure.cmake)
+    set(OUTPUT_VAL "${OUT_CPP_DIR}/output.txt")
 
     add_custom_target("${CPP_NAMESPACE}_updateVersionInfo"
         COMMAND ${CMAKE_COMMAND}
@@ -66,6 +67,7 @@ macro(m_generate_version_info_sources)
         -DFULL_VERSION=${FULL_VERSION}
         -DCUR_ACTIVE_DIR=${CUR_ACTIVE_DIR}
         -DCUR_DIR=${CUR_DIR}
+        -DCUR_BUILD_TYPE=$<CONFIG>
         -DBUILD_TYPES="${BUILD_TYPES}"
         -P ${CUR_ACTIVE_DIR}/GenerateByConfigure.cmake
         COMMENT "Updating source files ..."
@@ -73,7 +75,7 @@ macro(m_generate_version_info_sources)
     )
 
     add_library("${CPP_NAMESPACE}_versionInfo" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
-    target_compile_definitions("${CPP_NAMESPACE}_versionInfo" PUBLIC $<$<CONFIG:Release>:RELEASE> $<$<CONFIG:Debug>:DEBUG>)
+    target_compile_definitions("${CPP_NAMESPACE}_versionInfo" PUBLIC $<UPPER_CASE:$<CONFIG>>)
     set_target_properties("${CPP_NAMESPACE}_versionInfo" PROPERTIES POSITION_INDEPENDENT_CODE ON)
     add_dependencies("${CPP_NAMESPACE}_versionInfo" "${CPP_NAMESPACE}_updateVersionInfo")
     target_include_directories("${CPP_NAMESPACE}_versionInfo" PUBLIC
@@ -96,6 +98,19 @@ macro(m_generate_version_info_sources_by_project_name)
     foreach(arg IN LISTS singleValues multiValues)
          set(${arg} ${${prefix}_${arg}})
     endforeach()
+
+    get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if(isMultiConfig)
+        set(CMAKE_CONFIGURATION_TYPES "${BUILD_TYPES}")
+    else()
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "${BUILD_TYPES}")
+        if(NOT CMAKE_BUILD_TYPE)
+            set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+        elseif(NOT CMAKE_BUILD_TYPE IN_LIST BUILD_TYPES)
+            message(FATAL_ERROR "Invalid build type: ${CMAKE_BUILD_TYPE}")
+        endif()
+    endif()
+
     m_generate_version_info_sources(
         CPP_NAMESPACE ${MY_PROJECT_NAME}
         OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/include/${MY_PROJECT_NAME}
