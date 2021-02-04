@@ -86,7 +86,7 @@ endmacro()
 macro(m_generate_version_info)
     set(prefix ARG)
     set(noValues "")
-    set(singleValues MY_PROJECT_NAME)
+    set(singleValues CPP_NAMESPACE)
     set(multiValues BUILD_TYPES)
     
     cmake_parse_arguments(${prefix}
@@ -112,14 +112,14 @@ macro(m_generate_version_info)
     endif()
 
     m_generate_version_info_sources(
-        CPP_NAMESPACE ${MY_PROJECT_NAME}
-        OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/include/${MY_PROJECT_NAME}
-        OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/${MY_PROJECT_NAME}
-        MAJOR ${${MY_PROJECT_NAME}_VERSION_MAJOR}
-        MINOR ${${MY_PROJECT_NAME}_VERSION_MINOR}
-        PATCH ${${MY_PROJECT_NAME}_VERSION_PATCH}
-        TWEAK ${${MY_PROJECT_NAME}_VERSION_TWEAK}
-        FULL_VERSION ${${MY_PROJECT_NAME}_VERSION}
+        CPP_NAMESPACE ${CPP_NAMESPACE}
+        OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/include/${CPP_NAMESPACE}
+        OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/${CPP_NAMESPACE}
+        MAJOR ${${CPP_NAMESPACE}_VERSION_MAJOR}
+        MINOR ${${CPP_NAMESPACE}_VERSION_MINOR}
+        PATCH ${${CPP_NAMESPACE}_VERSION_PATCH}
+        TWEAK ${${CPP_NAMESPACE}_VERSION_TWEAK}
+        FULL_VERSION ${${CPP_NAMESPACE}_VERSION}
         CUR_DIR ${CMAKE_CURRENT_LIST_DIR}
         BUILD_TYPES ${BUILD_TYPES})
 endmacro()
