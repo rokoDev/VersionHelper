@@ -13,6 +13,7 @@ macro(m_generate_version_info_sources)
         TWEAK
         FULL_VERSION
         CUR_DIR
+        TARGET_NAME
         )
     set(multiValues BUILD_TYPES)
     
@@ -56,7 +57,7 @@ macro(m_generate_version_info_sources)
     include(${CUR_ACTIVE_DIR}/GenerateByConfigure.cmake)
     set(OUTPUT_VAL "${OUT_CPP_DIR}/output.txt")
 
-    add_custom_target("${CPP_NAMESPACE}_updateVersionInfo"
+    add_custom_target("${CPP_NAMESPACE}_updateVersion"
         COMMAND ${CMAKE_COMMAND}
         -DCPP_NAMESPACE=${CPP_NAMESPACE}
         -DIN_PATH_LIST="${IN_PATH_LIST}"
@@ -75,12 +76,13 @@ macro(m_generate_version_info_sources)
         BYPRODUCTS ${OUT_PATH_LIST}
     )
 
-    add_library("${CPP_NAMESPACE}_versionInfo" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
-    target_compile_definitions("${CPP_NAMESPACE}_versionInfo" PUBLIC $<UPPER_CASE:$<CONFIG>>)
-    set_target_properties("${CPP_NAMESPACE}_versionInfo" PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    add_dependencies("${CPP_NAMESPACE}_versionInfo" "${CPP_NAMESPACE}_updateVersionInfo")
-    target_include_directories("${CPP_NAMESPACE}_versionInfo" PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+    add_library("${CPP_NAMESPACE}_version" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
+    target_compile_definitions("${CPP_NAMESPACE}_version" PUBLIC $<UPPER_CASE:$<CONFIG>>)
+    set_target_properties("${CPP_NAMESPACE}_version" PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    add_dependencies("${CPP_NAMESPACE}_version" "${CPP_NAMESPACE}_updateVersion")
+    target_link_libraries(${TARGET_NAME} PUBLIC "${CPP_NAMESPACE}_version")
+    target_include_directories("${CPP_NAMESPACE}_version" PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/include>
         $<INSTALL_INTERFACE:include>)
 endmacro()
 
@@ -89,7 +91,9 @@ macro(m_generate_version_info)
     set(noValues "")
     set(singleValues
         PROJECT_NAME
-        CPP_NAMESPACE)
+        CPP_NAMESPACE
+        IDE_SRC_GROUP
+        TARGET_NAME)
     set(multiValues BUILD_TYPES)
     
     cmake_parse_arguments(${prefix}
@@ -99,8 +103,12 @@ macro(m_generate_version_info)
                           ${ARGN})
 
     foreach(arg IN LISTS singleValues multiValues)
-         set(${arg} ${${prefix}_${arg}})
+        set(${arg} ${${prefix}_${arg}})
     endforeach()
+
+    if((NOT TARGET_NAME) OR "${TARGET_NAME}" STREQUAL "")
+        message(FATAL_ERROR "Error: invalid TARGET_NAME" )
+    endif()
 
     get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     if(isMultiConfig)
@@ -116,13 +124,27 @@ macro(m_generate_version_info)
 
     m_generate_version_info_sources(
         CPP_NAMESPACE ${CPP_NAMESPACE}
-        OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/include/${CPP_NAMESPACE}
-        OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/${CPP_NAMESPACE}
+        OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/include/${CPP_NAMESPACE}
+        OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/src/${CPP_NAMESPACE}
         MAJOR ${${PROJECT_NAME}_VERSION_MAJOR}
         MINOR ${${PROJECT_NAME}_VERSION_MINOR}
         PATCH ${${PROJECT_NAME}_VERSION_PATCH}
         TWEAK ${${PROJECT_NAME}_VERSION_TWEAK}
         FULL_VERSION ${${PROJECT_NAME}_VERSION}
         CUR_DIR ${CMAKE_CURRENT_LIST_DIR}
-        BUILD_TYPES ${BUILD_TYPES})
+        BUILD_TYPES ${BUILD_TYPES}
+        TARGET_NAME ${TARGET_NAME}
+        )
+    
+    if(NOT((NOT IDE_SRC_GROUP) OR "${IDE_SRC_GROUP}" STREQUAL ""))
+        # If use IDE add generated targets into appropriate group
+        get_target_property(${CPP_NAMESPACE}_version_sources ${CPP_NAMESPACE}_version SOURCES)
+        source_group(
+          TREE   ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version
+          FILES  ${${CPP_NAMESPACE}_version_sources}
+        )
+
+        set_target_properties(${CPP_NAMESPACE}_version ${CPP_NAMESPACE}_updateVersion PROPERTIES FOLDER ${IDE_SRC_GROUP})
+    endif()
+
 endmacro()
