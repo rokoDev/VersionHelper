@@ -13,19 +13,6 @@ if(result)
 	message(FATAL_ERROR "Failed to get hash of last change: ${result}")
 endif()
 
-# Getting current branch name
-execute_process(
-	COMMAND ${GIT_EXECUTABLE} symbolic-ref --short HEAD
-	RESULT_VARIABLE result
-	OUTPUT_VARIABLE CURRENT_BRANCH_NAME
-	OUTPUT_STRIP_TRAILING_WHITESPACE
-	WORKING_DIRECTORY ${CUR_DIR}
-)
-
-if(result)
-	message(FATAL_ERROR "Failed to get current branch name: ${result}")
-endif()
-
 # Getting diff since last commit(e.g. any uncommited changes)
 execute_process(
 	COMMAND ${GIT_EXECUTABLE} diff HEAD

@@ -10,7 +10,6 @@ inline constexpr std::string_view kVersionInfoStr = R"vi(
 ${VERSION_INFO_STR}
    version: ${FULL_VERSION}
 build type: ${CUR_BUILD_TYPE}
-    branch: ${CURRENT_BRANCH_NAME}
       sha1: ${GIT_SHA1}
      dirty: ${IS_DIRTY}
 ********************************************************************************
@@ -36,11 +35,6 @@ build type: ${CUR_BUILD_TYPE}
         std::string_view sha1() noexcept
         {
             return kSHA1;
-        }
-
-        std::string_view branch() noexcept
-        {
-            return kBranchName;
         }
     }
 

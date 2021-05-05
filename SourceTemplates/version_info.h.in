@@ -21,7 +21,6 @@ namespace ${CPP_NAMESPACE}
     {
         bool dirty() noexcept;
         std::string_view sha1() noexcept;
-        std::string_view branch() noexcept;
     }  // namespace git
 
     eBuildType build_type() noexcept;

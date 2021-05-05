@@ -9,7 +9,6 @@ namespace ${CPP_NAMESPACE}
     {
     	inline constexpr bool kIsDirty = ${IS_DIRTY};
     	inline constexpr std::string_view kSHA1("${GIT_SHA1}");
-    	inline constexpr std::string_view kBranchName("${CURRENT_BRANCH_NAME}");
     }  // namespace git
 }  // namespace ${CPP_NAMESPACE}
 
