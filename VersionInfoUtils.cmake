@@ -76,9 +76,15 @@ macro(m_generate_version_info_sources)
         BYPRODUCTS ${OUT_PATH_LIST}
     )
 
+    # Define property for storing paths to source' directories
+    define_property(TARGET PROPERTY SRC_DIRS
+                    BRIEF_DOCS "Paths to directories with target' sources."
+                    FULL_DOCS "This property needed as INPUT to doxygen.")
+
     add_library("${CPP_NAMESPACE}_version" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
     target_compile_definitions("${CPP_NAMESPACE}_version" PUBLIC $<UPPER_CASE:$<CONFIG>>)
     set_target_properties("${CPP_NAMESPACE}_version" PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    set_property(TARGET ${TARGET_NAME} APPEND PROPERTY SRC_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version)
     add_dependencies("${CPP_NAMESPACE}_version" "${CPP_NAMESPACE}_updateVersion")
     target_link_libraries(${TARGET_NAME} PUBLIC "${CPP_NAMESPACE}_version")
     target_include_directories("${CPP_NAMESPACE}_version" PUBLIC
