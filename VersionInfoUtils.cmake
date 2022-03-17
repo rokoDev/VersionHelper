@@ -33,6 +33,7 @@ macro(m_generate_version_info_sources)
         "build_type.h"
         "git.h"
         "version_info.h"
+        "version_info_str.h"
         "version.h"
         "version_info.cpp"
         )

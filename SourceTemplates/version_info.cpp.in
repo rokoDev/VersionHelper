@@ -3,18 +3,10 @@
 #include "${CPP_NAMESPACE}/git.h"
 #include "${CPP_NAMESPACE}/version.h"
 #include "${CPP_NAMESPACE}/version_info.h"
+#include "${CPP_NAMESPACE}/version_info_str.h"
 
 namespace ${CPP_NAMESPACE}
 {
-inline constexpr std::string_view kVersionInfoStr = R"vi(
-${VERSION_INFO_STR}
-   version: ${FULL_VERSION}
-build type: ${CUR_BUILD_TYPE}
-      sha1: ${GIT_SHA1}
-     dirty: ${IS_DIRTY}
-********************************************************************************
-)vi";
-
     eBuildType build_type() noexcept
     {
         return kBuildType;

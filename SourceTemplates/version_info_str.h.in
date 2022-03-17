@@ -1,0 +1,18 @@
+#ifndef ${CPP_NAMESPACE}_version_info_str_h
+#define ${CPP_NAMESPACE}_version_info_str_h
+
+#include <string_view>
+
+namespace ${CPP_NAMESPACE}
+{
+inline constexpr std::string_view kVersionInfoStr = R"vi(
+${VERSION_INFO_STR}
+   version: ${FULL_VERSION}
+build type: ${CUR_BUILD_TYPE}
+      sha1: ${GIT_SHA1}
+     dirty: ${IS_DIRTY}
+********************************************************************************
+)vi";
+}  // namespace ${CPP_NAMESPACE}
+
+#endif /* ${CPP_NAMESPACE}_version_info_str_h */
