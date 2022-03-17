@@ -2,7 +2,7 @@ set(CUR_ACTIVE_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 macro(m_generate_version_info_sources)
     set(prefix ARG)
-    set(noValues "")
+    set(noValues HEADER_ONLY)
     set(singleValues
         CPP_NAMESPACE
         OUT_H_DIR
@@ -23,7 +23,7 @@ macro(m_generate_version_info_sources)
                           "${multiValues}"
                           ${ARGN})
 
-    foreach(arg IN LISTS singleValues multiValues)
+    foreach(arg IN LISTS noValues singleValues multiValues)
         set(${arg} ${${prefix}_${arg}})
     endforeach()
 
@@ -35,8 +35,10 @@ macro(m_generate_version_info_sources)
         "version_info.h"
         "version_info_str.h"
         "version.h"
-        "version_info.cpp"
         )
+    if(NOT HEADER_ONLY)
+        list(APPEND OUT_FILE_NAMES "version_info.cpp")
+    endif()
     set(IN_PATH_LIST "")
     set(OUT_PATH_LIST "")
     set(VERSION_INFO_HEADERS "")
@@ -81,21 +83,31 @@ macro(m_generate_version_info_sources)
     define_property(TARGET PROPERTY SRC_DIRS
                     BRIEF_DOCS "Paths to directories with target' sources."
                     FULL_DOCS "This property needed as INPUT to doxygen.")
-
-    add_library("${CPP_NAMESPACE}_version" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
-    target_compile_definitions("${CPP_NAMESPACE}_version" PUBLIC $<UPPER_CASE:$<CONFIG>>)
-    set_target_properties("${CPP_NAMESPACE}_version" PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    set_property(TARGET ${TARGET_NAME} APPEND PROPERTY SRC_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version)
-    add_dependencies("${CPP_NAMESPACE}_version" "${CPP_NAMESPACE}_updateVersion")
-    target_link_libraries(${TARGET_NAME} PUBLIC "${CPP_NAMESPACE}_version")
-    target_include_directories("${CPP_NAMESPACE}_version" PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/include>
-        $<INSTALL_INTERFACE:include>)
+    if(NOT HEADER_ONLY)
+        add_library("${CPP_NAMESPACE}_version" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
+        target_compile_definitions("${CPP_NAMESPACE}_version" PUBLIC $<UPPER_CASE:$<CONFIG>>)
+        set_target_properties("${CPP_NAMESPACE}_version" PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        set_property(TARGET ${TARGET_NAME} APPEND PROPERTY SRC_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version)
+        add_dependencies("${CPP_NAMESPACE}_version" "${CPP_NAMESPACE}_updateVersion")
+        target_link_libraries(${TARGET_NAME} PUBLIC "${CPP_NAMESPACE}_version")
+        target_include_directories("${CPP_NAMESPACE}_version" PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/include>
+            $<INSTALL_INTERFACE:include>)
+    else()
+        add_library("${CPP_NAMESPACE}_version" INTERFACE ${VERSION_INFO_HEADERS})
+        target_compile_definitions("${CPP_NAMESPACE}_version" INTERFACE $<UPPER_CASE:$<CONFIG>> ${CPP_NAMESPACE}_header_only)
+        set_property(TARGET ${TARGET_NAME} APPEND PROPERTY SRC_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version)
+        add_dependencies("${CPP_NAMESPACE}_version" "${CPP_NAMESPACE}_updateVersion")
+        target_link_libraries(${TARGET_NAME} PUBLIC "${CPP_NAMESPACE}_version")
+        target_include_directories("${CPP_NAMESPACE}_version" INTERFACE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/include>
+            $<INSTALL_INTERFACE:include>)
+    endif()
 endmacro()
 
 macro(m_generate_version_info)
     set(prefix ARG)
-    set(noValues "")
+    set(noValues HEADER_ONLY)
     set(singleValues
         PROJECT_NAME
         CPP_NAMESPACE
@@ -109,7 +121,7 @@ macro(m_generate_version_info)
                           "${multiValues}"
                           ${ARGN})
 
-    foreach(arg IN LISTS singleValues multiValues)
+    foreach(arg IN LISTS noValues singleValues multiValues)
         set(${arg} ${${prefix}_${arg}})
     endforeach()
 
@@ -129,6 +141,12 @@ macro(m_generate_version_info)
         endif()
     endif()
 
+    if(HEADER_ONLY)
+        set(HEADER_ONLY_FLAG "HEADER_ONLY")
+    else()
+        set(HEADER_ONLY_FLAG "")
+    endif()
+
     m_generate_version_info_sources(
         CPP_NAMESPACE ${CPP_NAMESPACE}
         OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/include/${CPP_NAMESPACE}
@@ -141,6 +159,7 @@ macro(m_generate_version_info)
         CUR_DIR ${CMAKE_CURRENT_LIST_DIR}
         BUILD_TYPES ${BUILD_TYPES}
         TARGET_NAME ${TARGET_NAME}
+        ${HEADER_ONLY_FLAG}
         )
     
     if(NOT((NOT IDE_SRC_GROUP) OR "${IDE_SRC_GROUP}" STREQUAL ""))

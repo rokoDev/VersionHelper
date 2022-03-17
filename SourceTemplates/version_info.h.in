@@ -6,9 +6,75 @@
 #include <string_view>
 #include "build_type.h"
 
+#ifdef ${CPP_NAMESPACE}_header_only
+#include "build_type_defs.h"
+#include "git.h"
+#include "version.h"
+#include "version_info.h"
+#include "version_info_str.h"
+#endif
+
 namespace ${CPP_NAMESPACE}
 {
+#ifdef ${CPP_NAMESPACE}_header_only
 	namespace version
+    {
+        constexpr uint32_t major() noexcept
+        {
+            return kMajor;
+        }
+
+        constexpr uint32_t minor() noexcept
+        {
+            return kMinor;
+        }
+
+        constexpr uint32_t patch() noexcept
+        {
+            return kPatch;
+        }
+
+        constexpr uint32_t tweak() noexcept
+        {
+            return kTweak;
+        }
+
+        constexpr std::string_view str() noexcept
+        {
+            return kStr;
+        }
+    }  // namespace version
+
+    namespace git
+    {
+        constexpr bool dirty() noexcept
+        {
+            return kIsDirty;
+        }
+
+        constexpr std::string_view sha1() noexcept
+        {
+            return kSHA1;
+        }
+
+    }  // namespace git
+
+    constexpr eBuildType build_type() noexcept
+    {
+        return kBuildType;
+    }
+
+    constexpr std::string_view build_type_str() noexcept
+    {
+        return kBuildTypeStr;
+    }
+
+    constexpr std::string_view version_info() noexcept
+    {
+        return kVersionInfoStr;
+    }
+#else
+    namespace version
     {
         uint32_t major() noexcept;
         uint32_t minor() noexcept;
@@ -26,6 +92,7 @@ namespace ${CPP_NAMESPACE}
     eBuildType build_type() noexcept;
     std::string_view build_type_str() noexcept;
     std::string_view version_info() noexcept;
+#endif
 }  // namespace ${CPP_NAMESPACE}
 
 #endif /* ${CPP_NAMESPACE}_version_info_h */
