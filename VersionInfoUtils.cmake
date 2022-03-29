@@ -32,39 +32,42 @@ macro(m_generate_version_info_sources)
         "build_type_defs.h"
         "build_type.h"
         "git.h"
-        "version_info.h"
         "version_info_str.h"
         "version.h"
         )
+    set(CONST_OUT_FILE_NAME "version_info.h")
     if(NOT HEADER_ONLY)
         list(APPEND OUT_FILE_NAMES "version_info.cpp")
     endif()
-    set(IN_PATH_LIST "")
-    set(OUT_PATH_LIST "")
     set(VERSION_INFO_HEADERS "")
     set(VERSION_INFO_SOURCES "")
+    set(UPDATE_VERSION_IN_PATH_LIST "")
+    set(UPDATE_VERSION_OUT_PATH_LIST "")
     foreach(OUT_NAME IN LISTS OUT_FILE_NAMES)
-        list(APPEND IN_PATH_LIST "${IN_PATH}/${OUT_NAME}.in")
+        list(APPEND UPDATE_VERSION_IN_PATH_LIST "${IN_PATH}/${OUT_NAME}.in")
         get_filename_component(F_EXT ${OUT_NAME} LAST_EXT)
         if(F_EXT STREQUAL ".h")
-            list(APPEND OUT_PATH_LIST "${OUT_H_DIR}/${OUT_NAME}")
+            list(APPEND UPDATE_VERSION_OUT_PATH_LIST "${OUT_H_DIR}/${OUT_NAME}")
             list(APPEND VERSION_INFO_HEADERS "${OUT_H_DIR}/${OUT_NAME}")
         elseif(F_EXT STREQUAL ".cpp")
-            list(APPEND OUT_PATH_LIST "${OUT_CPP_DIR}/${OUT_NAME}")
+            list(APPEND UPDATE_VERSION_OUT_PATH_LIST "${OUT_CPP_DIR}/${OUT_NAME}")
             list(APPEND VERSION_INFO_SOURCES "${OUT_CPP_DIR}/${OUT_NAME}")
         else()
             message(FATAL_ERROR "Invalid file extension: ${F_EXT} Permitted extensions are: .h, .cpp")
         endif()
     endforeach()
+
+    list(APPEND IN_PATH_LIST ${UPDATE_VERSION_IN_PATH_LIST} "${IN_PATH}/${CONST_OUT_FILE_NAME}.in")
+    list(APPEND OUT_PATH_LIST ${UPDATE_VERSION_OUT_PATH_LIST} "${OUT_H_DIR}/${CONST_OUT_FILE_NAME}")
+    list(APPEND VERSION_INFO_HEADERS "${OUT_H_DIR}/${CONST_OUT_FILE_NAME}")
     
     include(${CUR_ACTIVE_DIR}/GenerateByConfigure.cmake)
-    set(OUTPUT_VAL "${OUT_CPP_DIR}/output.txt")
 
     add_custom_target("${CPP_NAMESPACE}_updateVersion"
         COMMAND ${CMAKE_COMMAND}
         -DCPP_NAMESPACE=${CPP_NAMESPACE}
-        -DIN_PATH_LIST="${IN_PATH_LIST}"
-        -DOUT_PATH_LIST="${OUT_PATH_LIST}"
+        -DIN_PATH_LIST="${UPDATE_VERSION_IN_PATH_LIST}"
+        -DOUT_PATH_LIST="${UPDATE_VERSION_OUT_PATH_LIST}"
         -DMAJOR=${MAJOR}
         -DMINOR=${MINOR}
         -DPATCH=${PATCH}
@@ -76,7 +79,7 @@ macro(m_generate_version_info_sources)
         -DBUILD_TYPES="${BUILD_TYPES}"
         -P ${CUR_ACTIVE_DIR}/GenerateByConfigure.cmake
         COMMENT "Updating source files ..."
-        BYPRODUCTS ${OUT_PATH_LIST}
+        BYPRODUCTS ${UPDATE_VERSION_OUT_PATH_LIST}
     )
 
     # Define property for storing paths to source' directories
@@ -84,23 +87,23 @@ macro(m_generate_version_info_sources)
                     BRIEF_DOCS "Paths to directories with target' sources."
                     FULL_DOCS "This property needed as INPUT to doxygen.")
     if(NOT HEADER_ONLY)
-        add_library("${CPP_NAMESPACE}_version" STATIC ${VERSION_INFO_SOURCES} ${VERSION_INFO_HEADERS})
+        add_library("${CPP_NAMESPACE}_version" STATIC ${OUT_PATH_LIST})
         target_compile_definitions("${CPP_NAMESPACE}_version" PUBLIC $<UPPER_CASE:$<CONFIG>>)
         set_target_properties("${CPP_NAMESPACE}_version" PROPERTIES POSITION_INDEPENDENT_CODE ON)
         set_property(TARGET ${TARGET_NAME} APPEND PROPERTY SRC_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version)
         add_dependencies("${CPP_NAMESPACE}_version" "${CPP_NAMESPACE}_updateVersion")
         target_link_libraries(${TARGET_NAME} PUBLIC "${CPP_NAMESPACE}_version")
         target_include_directories("${CPP_NAMESPACE}_version" PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version>
             $<INSTALL_INTERFACE:include>)
     else()
-        add_library("${CPP_NAMESPACE}_version" INTERFACE ${VERSION_INFO_HEADERS})
+        add_library("${CPP_NAMESPACE}_version" INTERFACE ${OUT_PATH_LIST})
         target_compile_definitions("${CPP_NAMESPACE}_version" INTERFACE $<UPPER_CASE:$<CONFIG>> ${CPP_NAMESPACE}_header_only)
         set_property(TARGET ${TARGET_NAME} APPEND PROPERTY SRC_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version)
         add_dependencies("${CPP_NAMESPACE}_version" "${CPP_NAMESPACE}_updateVersion")
         target_link_libraries(${TARGET_NAME} PUBLIC "${CPP_NAMESPACE}_version")
         target_include_directories("${CPP_NAMESPACE}_version" INTERFACE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version>
             $<INSTALL_INTERFACE:include>)
     endif()
 endmacro()
@@ -149,8 +152,8 @@ macro(m_generate_version_info)
 
     m_generate_version_info_sources(
         CPP_NAMESPACE ${CPP_NAMESPACE}
-        OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/include/${CPP_NAMESPACE}
-        OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/src/${CPP_NAMESPACE}
+        OUT_H_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/${CPP_NAMESPACE}
+        OUT_CPP_DIR ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version/src
         MAJOR ${${PROJECT_NAME}_VERSION_MAJOR}
         MINOR ${${PROJECT_NAME}_VERSION_MINOR}
         PATCH ${${PROJECT_NAME}_VERSION_PATCH}
