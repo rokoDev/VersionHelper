@@ -101,7 +101,12 @@ macro(m_generate_version_info_sources)
         target_compile_definitions("${CPP_NAMESPACE}_version" INTERFACE $<UPPER_CASE:$<CONFIG>> ${CPP_NAMESPACE}_header_only)
         set_property(TARGET ${TARGET_NAME} APPEND PROPERTY SRC_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version)
         add_dependencies("${CPP_NAMESPACE}_version" "${CPP_NAMESPACE}_updateVersion")
-        target_link_libraries(${TARGET_NAME} PUBLIC "${CPP_NAMESPACE}_version")
+        get_target_property(${TARGET_NAME}_TYPE ${TARGET_NAME} TYPE)
+        if(${TARGET_NAME}_TYPE STREQUAL "INTERFACE_LIBRARY")
+            target_link_libraries(${TARGET_NAME} INTERFACE "${CPP_NAMESPACE}_version")
+        else()
+            target_link_libraries(${TARGET_NAME} PUBLIC "${CPP_NAMESPACE}_version")
+        endif()
         target_include_directories("${CPP_NAMESPACE}_version" INTERFACE
             $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${CPP_NAMESPACE}_version>
             $<INSTALL_INTERFACE:include>)
