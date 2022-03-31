@@ -10,7 +10,6 @@
 #include "build_type_defs.h"
 #include "git.h"
 #include "version.h"
-#include "version_info.h"
 #include "version_info_str.h"
 #endif
 
