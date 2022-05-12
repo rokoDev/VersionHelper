@@ -3,7 +3,6 @@
 #include "${CPP_NAMESPACE}/git.h"
 #include "${CPP_NAMESPACE}/version.h"
 #include "${CPP_NAMESPACE}/version_info.h"
-#include "${CPP_NAMESPACE}/version_info_str.h"
 
 namespace ${CPP_NAMESPACE}
 {
@@ -56,10 +55,5 @@ namespace ${CPP_NAMESPACE}
         {
             return kStr;
         }
-    }
-
-    std::string_view version_info() noexcept
-    {
-        return kVersionInfoStr;
     }
 }

@@ -8,18 +8,6 @@ foreach(BUILD_TYPE IN LISTS BUILD_TYPES)
 endforeach()
 string(REPLACE ";" ",\n        " BUILD_TYPES_ENUM_LIST "${ENUM_BUILD_TYPES}")
 
-set(TEMPLATE_LEN 80)
-set(INFO_STR " - ${CPP_NAMESPACE} info - ")
-string(LENGTH "${INFO_STR}" INFO_LEN)
-math(EXPR START_POS "(${TEMPLATE_LEN} - ${INFO_LEN}) / 2")
-string(REPEAT "*" ${START_POS} ASTERISK_STR)
-string(CONCAT VERSION_INFO_STR ${ASTERISK_STR} ${INFO_STR})
-string(LENGTH "${VERSION_INFO_STR}" VERSION_INFO_STR_LEN)
-math(EXPR SPACE_TO_FILL "${TEMPLATE_LEN} - ${VERSION_INFO_STR_LEN}")
-string(REPEAT "*" ${SPACE_TO_FILL} REST_STR)
-string(CONCAT VERSION_INFO_STR ${VERSION_INFO_STR} ${REST_STR})
-
-
 set(BUILD_TYPE_TEMPLATE [=[
 inline constexpr eBuildType kBuildType = eBuildType::k${BUILD_TYPE};
     inline constexpr std::string_view kBuildTypeStr = "${BUILD_TYPE}";]=])

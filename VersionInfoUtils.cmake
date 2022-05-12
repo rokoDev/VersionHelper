@@ -32,7 +32,6 @@ macro(m_generate_version_info_sources)
         "build_type_defs.h"
         "build_type.h"
         "git.h"
-        "version_info_str.h"
         "version.h"
         )
     set(CONST_OUT_FILE_NAME "version_info.h")
@@ -75,7 +74,6 @@ macro(m_generate_version_info_sources)
         -DFULL_VERSION=${FULL_VERSION}
         -DCUR_ACTIVE_DIR=${CUR_ACTIVE_DIR}
         -DCUR_DIR=${CUR_DIR}
-        -DCUR_BUILD_TYPE=$<CONFIG>
         -DBUILD_TYPES="${BUILD_TYPES}"
         -P ${CUR_ACTIVE_DIR}/GenerateByConfigure.cmake
         COMMENT "Updating source files ..."
